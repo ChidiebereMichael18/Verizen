@@ -5,31 +5,32 @@ const { UserSession } = require('../database/models');
 
 const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true });
 
-// Store conversation context temporarily (in production, use DB)
+// Simple session storage
 const userSessions = new Map();
 
 bot.on('message', async (msg) => {
   const chatId = msg.chat.id;
   const userMessage = msg.text;
 
-  // Ignore non-text messages for now
-  if (!userMessage) return;
+  // Ignore non-text messages
+  if (!userMessage) {
+    bot.sendMessage(chatId, "I currently only support text messages. Please send your question as text.");
+    return;
+  }
 
   try {
-    // Get or create a session for the user
+    console.log(`📨 Message from ${chatId}: ${userMessage}`);
+
+    // Get or create session
     let session = userSessions.get(chatId);
     if (!session) {
-      // Try to load from database first
+      // Try to load from database
       const dbSession = await UserSession.findOne({ telegramChatId: chatId.toString() });
-      if (dbSession) {
-        session = { history: dbSession.conversationHistory };
-      } else {
-        session = { history: [] };
-      }
+      session = dbSession ? { history: dbSession.conversationHistory } : { history: [] };
       userSessions.set(chatId, session);
     }
 
-    // Send "typing..." action
+    // Send "typing..." indicator
     bot.sendChatAction(chatId, 'typing');
 
     // Get AI response
@@ -39,9 +40,9 @@ bot.on('message', async (msg) => {
     session.history.push({ role: 'user', content: userMessage });
     session.history.push({ role: 'assistant', content: aiResponse });
 
-    // Keep history manageable (last 10 exchanges)
-    if (session.history.length > 20) {
-      session.history = session.history.slice(-20);
+    // Keep last 6 messages to manage context
+    if (session.history.length > 6) {
+      session.history = session.history.slice(-6);
     }
 
     // Save to database
@@ -55,18 +56,30 @@ bot.on('message', async (msg) => {
       { upsert: true, new: true }
     );
 
-    // Send response back to user
+    // Send response
     await bot.sendMessage(chatId, aiResponse);
+    console.log(`🤖 Response sent to ${chatId}`);
 
   } catch (error) {
-    console.error('Error processing message:', error);
-    await bot.sendMessage(chatId, 'Sorry, I encountered an error. Please try again in a moment.');
+    console.error('💥 Error processing message:', error);
+    await bot.sendMessage(chatId, "I apologize, but I'm having trouble processing your request right now. Please try again in a moment.");
   }
 });
 
-// Handle bot errors
-bot.on('error', (error) => {
-  console.error('Telegram Bot Error:', error);
+// Handle /start command
+bot.onText(/\/start/, (msg) => {
+  const chatId = msg.chat.id;
+  const welcomeMessage = `👋 Welcome to VeriZen AI!\n\nI'm your customer service assistant. I can help you with:\n• Transaction inquiries\n• Account questions\n• Issue resolution\n• General support\n\nHow can I help you today?`;
+  bot.sendMessage(chatId, welcomeMessage);
 });
+
+// Handle /help command
+bot.onText(/\/help/, (msg) => {
+  const chatId = msg.chat.id;
+  const helpMessage = `🆘 **VeriZen AI Help**\n\nI can assist with:\n• Transaction details and history\n• Account-related questions\n• Problem resolution\n• General customer service\n\nJust describe your issue in your own words, and I'll do my best to help!`;
+  bot.sendMessage(chatId, helpMessage, { parse_mode: 'Markdown' });
+});
+
+console.log('✅ Telegram bot started with polling');
 
 module.exports = bot;
