@@ -82,4 +82,4 @@ bot.onText(/\/help/, (msg) => {
 
 console.log('✅ Telegram bot started with polling');
 
-module.exports = bot;
+module.exports = bot;                               

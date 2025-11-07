@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const connectDB = require('./src/database/connection');
 const { PORT } = require('./src/config');
+const analyticsRoutes = require('./src/routes/analytics');
 
 const app = express();
 const port = PORT || 3000;
@@ -32,6 +33,7 @@ app.get('/status', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+app.use('/admin', analyticsRoutes);
 
 app.listen(port, () => {
   console.log(`🚀 VeriZen AI Server running on port ${port}`);
