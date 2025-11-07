@@ -18,7 +18,7 @@ app.use(express.json());
 // Basic health check route
 app.get('/', (req, res) => {
   res.json({ 
-    status: '🚀 VeriZen AI Server is Running!',
+    status: 'VeriZen AI Server is Running!',
     timestamp: new Date().toISOString(),
     ai_provider: process.env.AI_PROVIDER || 'gemini'
   });
