@@ -19,7 +19,7 @@ bot.on('message', async (msg) => {
   }
 
   try {
-    console.log(`📨 Message from ${chatId}: ${userMessage}`);
+    console.log(` Message from ${chatId}: ${userMessage}`);
 
     // Get or create session
     let session = userSessions.get(chatId);
@@ -61,7 +61,7 @@ bot.on('message', async (msg) => {
     console.log(`🤖 Response sent to ${chatId}`);
 
   } catch (error) {
-    console.error('💥 Error processing message:', error);
+    console.error('Error processing message:', error);
     await bot.sendMessage(chatId, "I apologize, but I'm having trouble processing your request right now. Please try again in a moment.");
   }
 });
@@ -76,10 +76,10 @@ bot.onText(/\/start/, (msg) => {
 // Handle /help command
 bot.onText(/\/help/, (msg) => {
   const chatId = msg.chat.id;
-  const helpMessage = `🆘 **VeriZen AI Help**\n\nI can assist with:\n• Transaction details and history\n• Account-related questions\n• Problem resolution\n• General customer service\n\nJust describe your issue in your own words, and I'll do my best to help!`;
+  const helpMessage = `*VeriZen AI Help**\n\nI can assist with:\n• Transaction details and history\n• Account-related questions\n• Problem resolution\n• General customer service\n\nJust describe your issue in your own words, and I'll do my best to help!`;
   bot.sendMessage(chatId, helpMessage, { parse_mode: 'Markdown' });
 });
 
-console.log('✅ Telegram bot started with polling');
+console.log(' Telegram bot started with polling');
 
 module.exports = bot;                               

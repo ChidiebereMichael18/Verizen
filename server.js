@@ -36,7 +36,7 @@ app.get('/status', (req, res) => {
 app.use('/admin', analyticsRoutes);
 
 app.listen(port, () => {
-  console.log(`🚀 VeriZen AI Server running on port ${port}`);
-  console.log(`🤖 AI Provider: ${process.env.AI_PROVIDER || 'gemini'}`);
-  console.log(`📍 Health check: http://localhost:${port}/`);
+  console.log(` VeriZen AI Server running on port ${port}`);
+  console.log(` AI Provider: ${process.env.AI_PROVIDER || 'gemini'}`);
+  console.log(` Health check: http://localhost:${port}/`);
 });

@@ -29,11 +29,11 @@ Respond helpfully:` }]
       contents: messages,
     });
 
-    console.log('✅ Gemini response received');
+    console.log(' Gemini response received');
     return response.text;
 
   } catch (error) {
-    console.error('❌ Gemini API Error:', error);
+    console.error('Gemini API Error:', error);
     
     // Fallback to rule-based responses
     return getFallbackResponse(userMessage, history);
